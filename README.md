@@ -51,3 +51,5 @@ Publication checks release checksums, rejects implementation source and license 
 - [NM Dev starter](https://github.com/nmltd/numerical-methods-java/tree/main/samples/new-nmdev-project)
 
 Public artifact IDs end in `-dist` because GitHub does not allow the existing private package names to be associated with a second repository. Java package names and the validated JAR bytes are unchanged. The NM Dev JAR retains its original bundled third-party `org.teneighty.heap` source files; no NM implementation source is included.
+
+For runnable technical-analysis strategies and backtests, see [algoquant-examples](https://github.com/nmltd/algoquant-examples). It includes six examples with offline synthetic data, optional Yahoo downloads and optional charts.
