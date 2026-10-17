@@ -1,6 +1,6 @@
 # NM public Maven distributions
 
-Public binary distributions of **AlgoQuant** and **NM Dev**. Implementation sources remain in private repositories. Customer JARs are combined, obfuscated distributions; matching Javadoc and standalone consumer POMs are published with them. Licenses and obfuscation maps are not included.
+Public binary distributions of **AlgoQuant** and **NM Dev**. Implementation sources remain in private repositories. Customer JARs are combined distributions; matching Javadoc and standalone consumer POMs are published with them.
 
 ## Maven repository
 
