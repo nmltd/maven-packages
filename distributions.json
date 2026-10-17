@@ -1,8 +1,16 @@
 [
   {
-    "artifact": "algoquant",
+    "artifact": "algoquant-dist",
+    "source_artifact": "algoquant",
     "group": "tech.nmfin",
     "version": "3.3.0-SNAPSHOT",
     "tag": "algoquant-3.3.0-snapshot-validated"
+  },
+  {
+    "artifact": "nmdev-dist",
+    "source_artifact": "nmdev",
+    "group": "dev.nm",
+    "version": "1.2.6-SNAPSHOT",
+    "tag": "nmdev-1.2.6-snapshot-validated"
   }
 ]

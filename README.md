@@ -16,8 +16,8 @@ Choose the library your application needs:
 
 | Library | Group ID | Artifact ID | Version |
 |---|---|---|---|
-| AlgoQuant | tech.nmfin | algoquant | 3.3.0-SNAPSHOT |
-| NM Dev | dev.nm | nmdev | 1.2.6-SNAPSHOT |
+| AlgoQuant | tech.nmfin | algoquant-dist | 3.3.0-SNAPSHOT |
+| NM Dev | dev.nm | nmdev-dist | 1.2.6-SNAPSHOT |
 
 AlgoQuant already includes NM Dev. Avoid adding both combined JARs to the same application.
 
@@ -49,3 +49,5 @@ Publication checks release checksums, rejects implementation source and license 
 - [NM Dev Javadoc](https://nmltd.github.io/nmdev/)
 - [AlgoQuant starter](https://github.com/nmltd/new-algoquant-project)
 - [NM Dev starter](https://github.com/nmltd/numerical-methods-java/tree/main/samples/new-nmdev-project)
+
+Public artifact IDs end in `-dist` because GitHub does not allow the existing private package names to be associated with a second repository. Java package names and the validated JAR bytes are unchanged. The NM Dev JAR retains its original bundled third-party `org.teneighty.heap` source files; no NM implementation source is included.

@@ -53,6 +53,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
           ARTIFACT: ${{ matrix.artifact }}
+          SOURCE_ARTIFACT: ${{ matrix.source_artifact }}
           VERSION: ${{ matrix.version }}
           GROUP: ${{ matrix.group }}
           RELEASE_TAG: ${{ matrix.tag }}
