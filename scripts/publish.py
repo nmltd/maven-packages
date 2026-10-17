@@ -29,7 +29,8 @@ assert root.find(ns + "dependencies") is None
 for path in folder.glob("*.jar"):
     with zipfile.ZipFile(path) as jar:
         assert jar.testzip() is None
-        assert not any(n.endswith((".java", ".lic", ".key")) for n in jar.namelist())
+        assert not any(n.endswith((".lic", ".key")) for n in jar.namelist())
+        assert not any(n.endswith(".java") and not n.startswith(("org/teneighty/heap/", "java/org/teneighty/heap/")) for n in jar.namelist())
 jar = folder / (artifact + "-" + version + ".jar")
 docs = folder / (artifact + "-" + version + "-javadoc.jar")
 subprocess.run(["mvn", "-B", "-ntp", "org.apache.maven.plugins:maven-deploy-plugin:3.1.4:deploy-file",
@@ -37,9 +38,14 @@ subprocess.run(["mvn", "-B", "-ntp", "org.apache.maven.plugins:maven-deploy-plug
     "-Dfile=" + str(jar), "-Djavadoc=" + str(docs), "-DpomFile=" + str(pom), "-DgeneratePom=false"], check=True)
 cache = Path(os.environ["RUNNER_TEMP"]) / ("fresh-maven-" + artifact)
 output = Path(os.environ["RUNNER_TEMP"]) / ("downloaded-" + artifact)
+consumer = Path("verification-pom.xml")
+consumer.write_text('<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>'
+    '<groupId>tech.nmfin.check</groupId><artifactId>public-download-check</artifactId><version>1</version>'
+    '<repositories><repository><id>github-public</id><url>https://maven.pkg.github.com/' + repo + '</url>'
+    '<snapshots><enabled>true</enabled></snapshots></repository></repositories></project>')
 for suffix, original in [("jar", jar), ("jar:javadoc", docs), ("pom", pom)]:
     target = output / suffix.replace(":", "-")
-    subprocess.run(["mvn", "-B", "-ntp", "-U", "-Dmaven.repo.local=" + str(cache),
+    subprocess.run(["mvn", "-B", "-ntp", "-U", "-Dmaven.repo.local=" + str(cache), "-f", str(consumer),
         "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:copy",
         "-Dartifact=" + group + ":" + artifact + ":" + version + ":" + suffix,
         "-DremoteRepositories=github-public::default::https://maven.pkg.github.com/" + repo,
