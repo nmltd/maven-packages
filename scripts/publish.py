@@ -1,5 +1,6 @@
 """Publish validated binary copies under distinct public Maven artifact names."""
 import os
+import json
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as E
@@ -56,3 +57,10 @@ for suffix, original in [("jar", jar), ("jar:javadoc", docs), ("pom", pom)]:
     assert len(files) == 1
     assert files[0].read_bytes() == original.read_bytes(), "Downloaded artifact differs"
 print("Published and verified public Maven distribution:", group + ":" + artifact + ":" + version)
+
+packages = json.loads(subprocess.check_output(["gh", "api", "orgs/nmltd/packages?package_type=maven&per_page=100"], text=True))
+matches = [item for item in packages if item["name"] == group + "." + artifact]
+assert len(matches) == 1, "Published package metadata not found"
+assert matches[0]["visibility"] == "public", "Published package is not public"
+assert matches[0]["repository"]["full_name"] == repo, "Unexpected package repository"
+print("Confirmed package visibility: public; repository:", repo)
