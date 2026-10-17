@@ -33,9 +33,24 @@ for path in folder.glob("*.jar"):
         assert not any(n.endswith(".java") and not n.startswith(("org/teneighty/heap/", "java/org/teneighty/heap/")) for n in jar.namelist())
 jar = folder / (artifact + "-" + version + ".jar")
 docs = folder / (artifact + "-" + version + "-javadoc.jar")
-subprocess.run(["mvn", "-B", "-ntp", "org.apache.maven.plugins:maven-deploy-plugin:3.1.4:deploy-file",
+command = ["mvn", "-B", "-ntp", "org.apache.maven.plugins:maven-deploy-plugin:3.1.4:deploy-file",
     "-DrepositoryId=github-public", "-Durl=https://maven.pkg.github.com/" + repo,
-    "-Dfile=" + str(jar), "-Djavadoc=" + str(docs), "-DpomFile=" + str(pom), "-DgeneratePom=false"], check=True)
+    "-Dfile=" + str(jar), "-Djavadoc=" + str(docs), "-DpomFile=" + str(pom), "-DgeneratePom=false"]
+try:
+    subprocess.run(command, check=True)
+except subprocess.CalledProcessError:
+    import base64
+    import urllib.request
+    import urllib.error
+    url = "https://maven.pkg.github.com/" + repo + "/" + group.replace(".", "/") + "/" + artifact + "/" + version + "/" + artifact + "-" + version + ".pom"
+    credentials = base64.b64encode((os.environ["GITHUB_ACTOR"] + ":" + os.environ["GITHUB_TOKEN"]).encode()).decode()
+    request = urllib.request.Request(url, data=pom.read_bytes(), method="PUT", headers={"Authorization": "Basic " + credentials, "Content-Type": "application/xml"})
+    try:
+        with urllib.request.urlopen(request) as response:
+            print("Registry diagnostic HTTP", response.status)
+    except urllib.error.HTTPError as error:
+        print("Registry diagnostic HTTP", error.code, error.read(2048).decode(errors="replace"))
+    raise
 cache = Path(os.environ["RUNNER_TEMP"]) / ("fresh-maven-" + artifact)
 output = Path(os.environ["RUNNER_TEMP"]) / ("downloaded-" + artifact)
 consumer = Path("verification-pom.xml")
