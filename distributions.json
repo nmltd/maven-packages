@@ -3,8 +3,8 @@
     "artifact": "algoquant-dist",
     "source_artifact": "algoquant",
     "group": "tech.nmfin",
-    "version": "3.3.0-SNAPSHOT",
-    "tag": "algoquant-3.3.0-snapshot-877ff85379ae"
+    "version": "3.3.1",
+    "tag": "algoquant-3.3.1-da7953d5ffe0"
   },
   {
     "artifact": "nmdev-dist",
