@@ -53,3 +53,16 @@ Publication checks release checksums, rejects implementation source and license 
 Public artifact IDs end in `-dist` because GitHub does not allow the existing private package names to be associated with a second repository. Java package names and the validated JAR bytes are unchanged. The NM Dev JAR retains its original bundled third-party `org.teneighty.heap` source files; no NM implementation source is included.
 
 For runnable technical-analysis strategies and backtests, see [algoquant-examples](https://github.com/nmltd/algoquant-examples). It includes six examples with offline synthetic data, optional Yahoo downloads and optional charts.
+
+## NMDEV stable 1.2.6
+
+The stable distribution preserves the exact obfuscated customer JAR and Javadoc
+JAR validated in NMDEV full validation run 39115934666 (4,070 integration tests,
+zero failures/errors). Only the standalone Maven POM artifactId is relabelled to
+`nmdev-dist`. No rebuild or re-obfuscation is performed. The public release
+`nmdev-1.2.6-validated` includes the original files and SHA256SUMS.
+
+Public consumer CI uses its own repository GITHUB_TOKEN and confirms it cannot
+read private NMDEV source before downloading/building the starter. Local users
+still authenticate to GitHub Packages using their own classic token with
+`read:packages`; private source repository access is unnecessary.

@@ -1,5 +1,8 @@
 """Publish validated binary copies under distinct public Maven artifact names."""
 import os
+import base64
+import urllib.request
+import urllib.error
 import json
 from pathlib import Path
 import subprocess
@@ -37,9 +40,25 @@ pom = Path("public-" + artifact + ".pom")
 tree.write(pom, encoding="utf-8", xml_declaration=True)
 jar = folder / (source + "-" + version + ".jar")
 docs = folder / (source + "-" + version + "-javadoc.jar")
-subprocess.run(["mvn", "-B", "-ntp", "org.apache.maven.plugins:maven-deploy-plugin:3.1.4:deploy-file",
-    "-DrepositoryId=github-public", "-Durl=https://maven.pkg.github.com/" + repo,
-    "-Dfile=" + str(jar), "-Djavadoc=" + str(docs), "-DpomFile=" + str(pom), "-DgeneratePom=false"], check=True)
+# Stable versions are immutable: skip identical publications and reject conflicts.
+existing = []
+for suffix, original in [(".jar", jar), ("-javadoc.jar", docs), (".pom", pom)]:
+    url = "https://maven.pkg.github.com/" + repo + "/" + group.replace(".", "/") + "/" + artifact + "/" + version + "/" + artifact + "-" + version + suffix
+    credential = os.environ["GITHUB_ACTOR"] + ":" + os.environ["GITHUB_TOKEN"]
+    auth = base64.b64encode(credential.encode()).decode()
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"Authorization": "Basic " + auth}), timeout=60) as response:
+            assert response.read() == original.read_bytes(), "Existing package differs: " + suffix
+        existing.append(True)
+    except urllib.error.HTTPError as error:
+        if error.code != 404: raise
+        existing.append(False)
+if not version.endswith("-SNAPSHOT"):
+    assert all(existing) or not any(existing), "Partial stable publication; investigate before retrying"
+if not all(existing) or version.endswith("-SNAPSHOT"):
+    subprocess.run(["mvn", "-B", "-ntp", "org.apache.maven.plugins:maven-deploy-plugin:3.1.4:deploy-file",
+        "-DrepositoryId=github-public", "-Durl=https://maven.pkg.github.com/" + repo,
+        "-Dfile=" + str(jar), "-Djavadoc=" + str(docs), "-DpomFile=" + str(pom), "-DgeneratePom=false"], check=True)
 cache = Path(os.environ["RUNNER_TEMP"]) / ("fresh-maven-" + artifact)
 output = Path(os.environ["RUNNER_TEMP"]) / ("downloaded-" + artifact)
 consumer = Path("verification-" + artifact + ".xml")
