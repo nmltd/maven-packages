@@ -10,7 +10,7 @@
     "artifact": "nmdev-dist",
     "source_artifact": "nmdev",
     "group": "dev.nm",
-    "version": "1.2.6",
-    "tag": "nmdev-1.2.6-validated"
+    "version": "1.2.7",
+    "tag": "nmdev-1.2.7-validated"
   }
 ]
